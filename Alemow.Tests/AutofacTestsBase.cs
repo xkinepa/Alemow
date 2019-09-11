@@ -1,7 +1,7 @@
 ﻿using System;
 using Autofac;
 
-namespace Alemow.Tests
+namespace Alemow
 {
     public abstract class AutofacTestsBase : IDisposable
     {

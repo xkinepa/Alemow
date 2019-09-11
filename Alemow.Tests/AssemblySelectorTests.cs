@@ -1,11 +1,10 @@
-using System;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
 using Alemow.Assemblies;
 using Xunit;
 
-namespace Alemow.Tests
+namespace Alemow
 {
     public class AssemblySelectorTests
     {

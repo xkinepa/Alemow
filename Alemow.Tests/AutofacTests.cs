@@ -1,4 +1,4 @@
-﻿namespace Alemow.Tests
+﻿namespace Alemow
 {
     public class AutofacTests : AutofacTestsBase
     {

@@ -7,7 +7,7 @@ using Autofac;
 using Microsoft.Extensions.Configuration;
 using Module = Autofac.Module;
 
-namespace Alemow.Samples
+namespace Alemow
 {
     internal class Program
     {
