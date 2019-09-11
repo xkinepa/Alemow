@@ -13,13 +13,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alemow", "Alemow\Alemow.csproj", "{4B22E0FF-1A16-429B-84A1-F46B6609B774}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Alemow", "Alemow\Alemow.csproj", "{4B22E0FF-1A16-429B-84A1-F46B6609B774}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alemow.Autofac", "Alemow.Autofac\Alemow.Autofac.csproj", "{BFA96B6C-488D-4348-A39F-EC7302692FFE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Alemow.Autofac", "Alemow.Autofac\Alemow.Autofac.csproj", "{BFA96B6C-488D-4348-A39F-EC7302692FFE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alemow.Samples", "Alemow.Samples\Alemow.Samples.csproj", "{C32DD972-E848-4BDF-A484-23B05465AB6B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Alemow.Samples", "Alemow.Samples\Alemow.Samples.csproj", "{C32DD972-E848-4BDF-A484-23B05465AB6B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alemow.Tests", "Alemow.Tests\Alemow.Tests.csproj", "{DEECB707-8FD9-41D1-89A9-3AA3CF6B8142}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Alemow.Tests", "Alemow.Tests\Alemow.Tests.csproj", "{DEECB707-8FD9-41D1-89A9-3AA3CF6B8142}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alemow.Empty", "Alemow.Empty\Alemow.Empty.csproj", "{37ACABC0-5768-47F3-A623-2EA20BE12673}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,6 +45,10 @@ Global
 		{DEECB707-8FD9-41D1-89A9-3AA3CF6B8142}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DEECB707-8FD9-41D1-89A9-3AA3CF6B8142}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DEECB707-8FD9-41D1-89A9-3AA3CF6B8142}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37ACABC0-5768-47F3-A623-2EA20BE12673}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37ACABC0-5768-47F3-A623-2EA20BE12673}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37ACABC0-5768-47F3-A623-2EA20BE12673}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37ACABC0-5768-47F3-A623-2EA20BE12673}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
