@@ -6,17 +6,17 @@ using System.Reflection;
 
 namespace Alemow.Assemblies
 {
-    public class DirectoryAssembliesSelector : IAssemblySelector
+    public class DirectoryAssemblySelector : IAssemblySelector
     {
         private readonly string _directory;
         private readonly Func<string, Assembly> _assemblyLoader;
 
-        public DirectoryAssembliesSelector(Func<string, Assembly> assemblyLoader)
+        public DirectoryAssemblySelector(Func<string, Assembly> assemblyLoader)
             : this(AppContext.BaseDirectory, assemblyLoader)
         {
         }
 
-        public DirectoryAssembliesSelector(string directory, Func<string, Assembly> assemblyLoader)
+        public DirectoryAssemblySelector(string directory, Func<string, Assembly> assemblyLoader)
         {
             _directory = directory;
             _assemblyLoader = assemblyLoader;
