@@ -34,7 +34,10 @@ namespace Alemow.Samples
     [Configuration]
     public class BModule : Module
     {
-        [Bean, Scope(Scope.PerDependency)]
+        [Bean(false, false),
+         Scope(Scope.PerDependency),
+         As(typeof(IB)),
+         Key("B", typeof(IB))]
         public IB DefineB([ConfigValue("foo")] string foo, [Inject] C c)
         {
             return new B();
@@ -53,7 +56,7 @@ namespace Alemow.Samples
     public class A : IA
     {
         [ConfigValue("foo")] private readonly string _foo;
-        [Inject] private readonly IB _b;
+        [Inject("B")] private readonly IB _b;
 
         public void Dump()
         {
