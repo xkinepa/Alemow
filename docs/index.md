@@ -11,8 +11,15 @@
 
 Alemow is an annotation based IoC boostrapper, working with Autofac.
 
-[Full docs](https://xkinepa.github.io/Alemow)
+## Basics
+
+Alemow currently only targets netstandard2.0, and only `Autofac` is integrated for now.
 
 ## Usages
 
-## TODO
+### NuGet
+`Install-Package Alemow.Autofac`
+
+### ComponentAttribute
+
+### ConfigurationAttribute
