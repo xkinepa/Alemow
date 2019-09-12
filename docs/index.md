@@ -9,7 +9,7 @@
 [![GitHub forks](https://img.shields.io/github/forks/xkinepa/Alemow.svg?style=social&label=Fork)](https://github.com/xkinepa/Alemow)
 [![GitHub watchers](https://img.shields.io/github/watchers/xkinepa/Alemow.svg?style=social&label=Watch)](https://github.com/xkinepa/Alemow)
 
-Alemow is an annotation based IoC boostrapper, working with Autofac.
+Alemow is an annotation based IoC boostrapper, working with Autofac, and reducing registering complexity heavily.
 
 ## Basics
 
