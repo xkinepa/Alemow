@@ -39,9 +39,9 @@ or
 `AutoRegister` will load all defined types from `IAssemblySelector.Find` with `[ComponentAttribute]` annotated.
 
 ```csharp
-    [Component(asSelf: true, asImplementedInterfaces: false),
+    [Component(asSelf: true, asImplementedInterfaces: true),
      Scope(Scope.Singleton),
-     As(typeof(IService)),
+     //As(typeof(IService)),
      Key("A", typeof(IService))]
     public class Service : IService
     {
@@ -57,10 +57,11 @@ or
 ```
 
 * `[ComponentAttribute]` indicates this type will be registered automatically;
-* Scope, As, Keyed, WithMetadata from Autofac are supported by different attributes;
+* Scope, `As`, `Keyed`, `WithMetadata` features from Autofac are supported by different attributes;
 * `[InjectAttribute]` annotated fields are resolved when `OnActivating`;
-* `[ConfigValueAttribute]` annotated fields are resolved by `IConfiguration` when `OnActivating`, different types are supported such as `int`, `IList<string>`, etc;
-* The `ILifetimeScope` is attached to the resolved instance by `LifetimeScopeAttacher.Instance`.
+* `[ConfigValueAttribute]` annotated fields are resolved by registered `IConfiguration` when `OnActivating`, different types are supported such as `int`, `IList<string>`, etc;
+* The `ILifetimeScope` is attached to the resolved instance by `LifetimeScopeAttacher.Instance`;
+* Other Autofac features such as `PropertiesAutowired` and interceptors are not activated for `[ComponentAttribute]` types, see **Feature** below.
 
 ### ConfigurationAttribute
 
@@ -84,7 +85,7 @@ or
     }
 ```
 
-* `[ConfigurationAttribute]` indicates this type will be parsed automatically, if this type is derived from `Autofac.Core.IModule`, this type will be registered as a module;
+* `[ConfigurationAttribute]` indicates this type will be parsed automatically, if this type implements `Autofac.Core.IModule`, the type will be registered as a module;
 * `[BeanAttribute]` indicates this method will be used as the creator and the result will be returned as the resolved instance;
 * `[InjectAttribute]` and `[ConfigValueAttribute]` are supported when resolving parameters;
 * Specific type as `IComponentContext` is also supported;
