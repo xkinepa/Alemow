@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using Alemow.Attributes;
+using Alemow.Autofac.Resolvers;
 using Alemow.Miscs;
 using Autofac;
 using Autofac.Builder;
@@ -13,6 +14,9 @@ namespace Alemow.Autofac
     internal class ConfigurationRegisterer : IRegisterer
     {
         private readonly ContainerBuilder _containerBuilder;
+
+        private readonly ConfigValueResolver _configValueResolver = new ConfigValueResolver();
+        private readonly InjectResolver _injectResolver = new InjectResolver();
 
         public ConfigurationRegisterer(ContainerBuilder containerBuilder)
         {
@@ -78,23 +82,45 @@ namespace Alemow.Autofac
 
         private object ResolveParameter(IComponentContext context, ParameterInfo parameter)
         {
-            var valueAttr = parameter.GetCustomAttribute<ConfigValueAttribute>();
-            if (valueAttr != null)
+            var configValueAttr = parameter.GetCustomAttribute<ConfigValueAttribute>();
+            if (configValueAttr != null)
             {
-                var valuePath = valueAttr.Path;
-                var config = context.Resolve<IConfiguration>();
                 var valueType = parameter.ParameterType;
-                var value = config.GetSection(valuePath).Get(valueType);
-                return value;
+                var (success, value) = _configValueResolver.Resolve(
+                    context,
+                    valueType.GetTypeInfo(),
+                    new ConfigValueResolver.ConfigValueResolverParam
+                    {
+                        Attribute = configValueAttr,
+                    });
+
+                if (success)
+                {
+                    return value;
+                }
+                
+                Assertion.IsTrue(parameter.HasDefaultValue, $"optional configValue parameter {parameter.Name} should have default value");
+                return parameter.DefaultValue;
             }
 
-            var inject = parameter.GetCustomAttribute<InjectAttribute>();
-            if (inject != null)
+            var injectAttr = parameter.GetCustomAttribute<InjectAttribute>();
+            if (injectAttr != null)
             {
-                var key = inject.Key;
                 var valueType = parameter.ParameterType;
-                var value = key != null ? context.ResolveKeyed(key, valueType) : context.Resolve(valueType);
-                return value;
+                var (success, value) = _injectResolver.Resolve(
+                    context,
+                    valueType.GetTypeInfo(),
+                    new InjectResolver.InjectResolverParam
+                    {
+                        Attribute = injectAttr,
+                    });
+                if (success)
+                {
+                    return value;
+                }
+
+                Assertion.IsTrue(parameter.HasDefaultValue, $"optional inject parameter {parameter.Name} should have default value");
+                return parameter.DefaultValue;
             }
 
             if (parameter.ParameterType == typeof(IComponentContext))

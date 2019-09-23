@@ -2,15 +2,16 @@
 using System.Linq;
 using System.Reflection;
 using Alemow.Attributes;
+using Alemow.Autofac.Resolvers;
 using Alemow.Miscs;
-using Autofac;
 using Autofac.Builder;
-using Microsoft.Extensions.Configuration;
 
 namespace Alemow.Autofac.Features
 {
     internal class ConfigValueAutoRegisterFeature : IAutoRegisterFeature
     {
+        private readonly ConfigValueResolver _resolver = new ConfigValueResolver();
+
         public IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle>
             Apply<TLimit, TActivatorData, TRegistrationStyle>(
                 IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> builder, Type type)
@@ -29,10 +30,18 @@ namespace Alemow.Autofac.Features
                             continue;
                         }
 
-                        var valuePath = valueAttr.Path;
-                        var config = e.Context.Resolve<IConfiguration>();
                         var valueType = fieldInfo.FieldType;
-                        fieldInfo.SetValue(instance, config.GetSection(valuePath).Get(valueType));
+                        var (success, value) = _resolver.Resolve(
+                            e.Context,
+                            valueType.GetTypeInfo(),
+                            new ConfigValueResolver.ConfigValueResolverParam
+                            {
+                                Attribute = valueAttr,
+                            });
+                        if (success)
+                        {
+                            fieldInfo.SetValue(instance, value);
+                        }
                     }
                 });
             }

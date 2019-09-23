@@ -2,14 +2,16 @@
 using System.Linq;
 using System.Reflection;
 using Alemow.Attributes;
+using Alemow.Autofac.Resolvers;
 using Alemow.Miscs;
-using Autofac;
 using Autofac.Builder;
 
 namespace Alemow.Autofac.Features
 {
     internal class InjectionAutoRegisterFeature : IAutoRegisterFeature
     {
+        private readonly InjectResolver _resolver = new InjectResolver();
+
         public IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle>
             Apply<TLimit, TActivatorData, TRegistrationStyle>(
                 IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> builder, Type type)
@@ -28,10 +30,18 @@ namespace Alemow.Autofac.Features
                             continue;
                         }
 
-                        var key = injectAttr.Key;
                         var valueType = fieldInfo.FieldType;
-                        var value = key != null ? e.Context.ResolveKeyed(key, valueType) : e.Context.Resolve(valueType);
-                        fieldInfo.SetValue(instance, value);
+                        var (success, value) = _resolver.Resolve(
+                            e.Context,
+                            valueType.GetTypeInfo(),
+                            new InjectResolver.InjectResolverParam
+                            {
+                                Attribute = injectAttr,
+                            });
+                        if (success)
+                        {
+                            fieldInfo.SetValue(instance, value);
+                        }
                     }
                 });
             }

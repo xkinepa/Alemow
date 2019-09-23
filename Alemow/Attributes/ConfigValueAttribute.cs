@@ -7,11 +7,13 @@ namespace Alemow.Attributes
     [AttributeUsage(AttributeTargets.Field/* | AttributeTargets.Property*/ | AttributeTargets.Parameter)]
     public class ConfigValueAttribute : Attribute
     {
-        public ConfigValueAttribute(string path)
+        public ConfigValueAttribute(string path, bool required = true)
         {
             Path = path;
+            Required = required;
         }
 
         public string Path { get; }
+        public bool Required { get; }
     }
 }
