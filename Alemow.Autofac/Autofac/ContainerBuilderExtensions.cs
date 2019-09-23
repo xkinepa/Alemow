@@ -16,6 +16,11 @@ namespace Alemow.Autofac
             return new AutoRegisterConfigurer(containerBuilder, assemblySelectors.SelectMany(s => s.Find()));
         }
 
+        public static AutoRegisterConfigurer AutoRegisterAssembly(this ContainerBuilder containerBuilder, Assembly assembly)
+        {
+            return AutoRegister(containerBuilder, new SimpleAssemblySelector(assembly));
+        }
+
         public static AutoRegisterConfigurer AutoRegisterBaseDirectory(this ContainerBuilder containerBuilder, Func<string, Assembly> assemblyLoader,
             IList<string> includes = null,
             IList<string> excludes = null
