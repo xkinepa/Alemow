@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Alemow.Assemblies;
+using Alemow.Miscs;
 using Autofac;
 
 namespace Alemow.Autofac
@@ -11,6 +12,7 @@ namespace Alemow.Autofac
     {
         public static AutoRegisterConfigurer AutoRegister(this ContainerBuilder containerBuilder, params IAssemblySelector[] assemblySelectors)
         {
+            Assertion.IsTrue(assemblySelectors.Any(), $"{nameof(assemblySelectors)} should contain at least one value");
             return new AutoRegisterConfigurer(containerBuilder, assemblySelectors.SelectMany(s => s.Find()));
         }
 
