@@ -7,7 +7,6 @@ using Alemow.Miscs;
 using Autofac;
 using Autofac.Builder;
 using Autofac.Core;
-using Microsoft.Extensions.Configuration;
 
 namespace Alemow.Autofac
 {

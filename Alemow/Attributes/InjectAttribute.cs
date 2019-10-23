@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 namespace Alemow.Attributes
 {
     [MeansImplicitUse(ImplicitUseKindFlags.Assign)]
-    [AttributeUsage(AttributeTargets.Field/* | AttributeTargets.Property*/ | AttributeTargets.Parameter)]
+    [AttributeUsage(AttributeTargets.Field/* | AttributeTargets.Property*/ | AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)]
     public class InjectAttribute : Attribute
     {
         public InjectAttribute(object key = null, bool required = true)

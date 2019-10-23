@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 namespace Alemow.Attributes
 {
     [MeansImplicitUse]
-    [AttributeUsage(AttributeTargets.Field/* | AttributeTargets.Property*/ | AttributeTargets.Parameter)]
+    [AttributeUsage(AttributeTargets.Field/* | AttributeTargets.Property*/ | AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)]
     public class ConfigValueAttribute : Attribute
     {
         public ConfigValueAttribute(string path, bool required = true)

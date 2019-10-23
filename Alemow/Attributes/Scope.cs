@@ -2,7 +2,7 @@
 
 namespace Alemow.Attributes
 {
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
     public class ScopeAttribute : Attribute
     {
         public ScopeAttribute(Scope scope)
@@ -19,7 +19,7 @@ namespace Alemow.Attributes
         Singleton,
         PerLifetimeScope,
         //PerMatchingLifetime,
-        PerRequest,
+        [Obsolete] PerRequest,
         //PerOwned,
     }
 }
