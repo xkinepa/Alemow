@@ -9,7 +9,7 @@ namespace Alemow.Miscs
         {
             do
             {
-                foreach (var field in type.GetRuntimeFields())
+                foreach (var field in type.DeclaredFields)
                 {
                     yield return field;
                 }
