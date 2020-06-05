@@ -33,8 +33,6 @@ namespace Alemow.Autofac
                     return builder.SingleInstance();
                 case Scope.PerLifetimeScope:
                     return builder.InstancePerLifetimeScope();
-                case Scope.PerRequest:
-                    return builder.InstancePerRequest();
                 default:
                     throw Assertion.Fail();
             }

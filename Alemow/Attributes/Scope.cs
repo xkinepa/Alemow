@@ -19,7 +19,6 @@ namespace Alemow.Attributes
         Singleton,
         PerLifetimeScope,
         //PerMatchingLifetime,
-        [Obsolete] PerRequest,
         //PerOwned,
     }
 }
