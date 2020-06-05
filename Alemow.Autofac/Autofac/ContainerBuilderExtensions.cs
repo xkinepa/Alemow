@@ -27,7 +27,7 @@ namespace Alemow.Autofac
         )
         {
             var assemblySelector = new CompositeAssemblySelector();
-            assemblySelector.Union(new DirectoryAssemblySelector(assemblyLoader));
+            assemblySelector.Union(new DirectoryAssembliesSelector(assemblyLoader));
             if (includes != null)
             {
                 assemblySelector.Includes(includes);

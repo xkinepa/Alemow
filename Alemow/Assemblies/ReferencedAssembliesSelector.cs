@@ -4,16 +4,16 @@ using System.Reflection;
 
 namespace Alemow.Assemblies
 {
-    public class ReferencedAssemblySelector : IAssemblySelector
+    public class ReferencedAssembliesSelector : IAssemblySelector
     {
         private readonly Assembly _entryAssembly;
 
-        public ReferencedAssemblySelector()
+        public ReferencedAssembliesSelector()
             : this(Assembly.GetEntryAssembly())
         {
         }
 
-        public ReferencedAssemblySelector(Assembly entryAssembly)
+        public ReferencedAssembliesSelector(Assembly entryAssembly)
         {
             _entryAssembly = entryAssembly;
         }

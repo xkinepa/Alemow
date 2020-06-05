@@ -20,7 +20,7 @@ namespace Alemow
         [Fact]
         public void ReferencedAssemblySelector()
         {
-            var assemblies = new ReferencedAssemblySelector(_assembly).Find().ToList();
+            var assemblies = new ReferencedAssembliesSelector(_assembly).Find().ToList();
             Assert.Contains(assemblies, it => it.GetName().Name == _assembly.GetName().Name);
             foreach (var referencedAssembly in _assembly.GetReferencedAssemblies())
             {
@@ -31,7 +31,7 @@ namespace Alemow
         [Fact]
         public void DirectoryAssemblySelector()
         {
-            var assemblies = new DirectoryAssemblySelector(AssemblyLoadContext.Default.LoadFromAssemblyPath).Find().ToList();
+            var assemblies = new DirectoryAssembliesSelector(AssemblyLoadContext.Default.LoadFromAssemblyPath).Find().ToList();
             Assert.Contains(assemblies, it => it.GetName().Name == _assembly.GetName().Name);
             Assert.Contains(assemblies, it => it.GetName().Name == "Alemow.Empty");
         }
