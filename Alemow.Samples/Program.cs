@@ -3,6 +3,7 @@ using System.Reflection;
 using Alemow.Assemblies;
 using Alemow.Attributes;
 using Alemow.Autofac;
+using Alemow.Config;
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using Module = Autofac.Module;
@@ -21,7 +22,10 @@ namespace Alemow
 
             builder.RegisterInstance(conf).ExternallyOwned().AsImplementedInterfaces();
 
-            builder.AutoRegister(new SimpleAssemblySelector(Assembly.GetEntryAssembly()));
+            builder.AutoRegister()
+                .AssemblySelectors(new SimpleAssemblySelector(Assembly.GetEntryAssembly()))
+                .ConfigResolver(new ConfigurationConfigResolver(conf))
+                .Profile("default");
 
             using (var container = builder.Build())
             {
@@ -57,6 +61,18 @@ namespace Alemow
     {
         [ConfigValue("foo")] private readonly string _foo;
         [Inject("B")] private readonly IB _b;
+
+        [Init]
+        public void Init()
+        {
+            Console.WriteLine("Init");
+        }
+
+        [Destroy]
+        public void Destroy()
+        {
+            Console.WriteLine("Destroy");
+        }
 
         public void Dump()
         {

@@ -5,6 +5,6 @@ namespace Alemow.Autofac.Resolvers
 {
     public interface IResolver<TP>
     {
-        (bool, object) Resolve(IComponentContext context, TypeInfo type, TP param);
+        (bool Successful, object Value) Resolve(IComponentContext context, TP param);
     }
 }

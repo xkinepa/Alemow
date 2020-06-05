@@ -15,5 +15,16 @@ namespace Alemow.Miscs
                 }
             } while ((type = type.BaseType?.GetTypeInfo()) != null);
         }
+
+        public static IEnumerable<MethodInfo> GetAllMethods(this TypeInfo type)
+        {
+            do
+            {
+                foreach (var method in type.DeclaredMethods)
+                {
+                    yield return method;
+                }
+            } while ((type = type.BaseType?.GetTypeInfo()) != null);
+        }
     }
 }

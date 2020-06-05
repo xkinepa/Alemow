@@ -4,11 +4,13 @@ using Autofac.Builder;
 
 namespace Alemow.Autofac.Features
 {
+    [Obsolete]
     internal class AttachLifetimeScopeAutoRegisterFeature : IAutoRegisterFeature
     {
         public IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle>
             Apply<TLimit, TActivatorData, TRegistrationStyle>(
                 IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> builder, Type type)
+            where TActivatorData : ReflectionActivatorData
         {
             return builder.OnActivated(e =>
             {

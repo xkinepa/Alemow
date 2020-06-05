@@ -13,13 +13,20 @@ namespace Alemow.Autofac
     internal class ConfigurationRegisterer : IRegisterer
     {
         private readonly ContainerBuilder _containerBuilder;
+        private readonly AutoRegisterOptions _options;
 
-        private readonly ConfigValueResolver _configValueResolver = new ConfigValueResolver();
-        private readonly InjectResolver _injectResolver = new InjectResolver();
+        private readonly IObjectFactory _instanceFactory;
+        private readonly IProfileMatcher _profileMatcher;
+        private readonly ParameterInfoResolver _parameterInfoResolver;
 
-        public ConfigurationRegisterer(ContainerBuilder containerBuilder)
+        public ConfigurationRegisterer(ContainerBuilder containerBuilder, AutoRegisterOptions options)
         {
             _containerBuilder = containerBuilder;
+            _options = options;
+
+            _instanceFactory = options.ObjectFactory;
+            _profileMatcher = new ProfileMatcher(options.Profiles);
+            _parameterInfoResolver = new ParameterInfoResolver(new ConfigValueResolver(options.ConfigResolver), new InjectResolver());
         }
 
         public void Register(Type type)
@@ -30,28 +37,53 @@ namespace Alemow.Autofac
                 return;
             }
 
-            if (typeof(IModule).IsAssignableFrom(type))
+            if (con.Profile != null)
             {
-                _containerBuilder.RegisterModule((IModule) Activator.CreateInstance(type));
+                if (!_profileMatcher.Matches(con.Profile))
+                {
+                    return;
+                }
             }
 
-            foreach (var method in type.GetRuntimeMethods())
+            var instance = _instanceFactory.CreateFor(type.GetTypeInfo());
+            if (instance is IModule module)
             {
-                RegisterMethod(method, Activator.CreateInstance(type));
+                _containerBuilder.RegisterModule(module);
+            }
+
+            foreach (var method in type.GetRuntimeMethods().Where(it => !it.IsStatic))
+            {
+                RegisterMethod(method, instance);
             }
         }
 
         private void RegisterMethod(MethodInfo method, object instance)
         {
-            if (typeof(object).Equals(method.DeclaringType))
+            if (typeof(object) == method.DeclaringType)
             {
                 return;
             }
 
+            RegisterInitMethod(method, instance);
+            RegisterBeanMethod(method, instance);
+            RegisterDestroyMethod(method, instance);
+        }
+
+        // orderAttribute?
+        private void RegisterBeanMethod(MethodInfo method, object instance)
+        {
             var bean = method.GetCustomAttribute<BeanAttribute>();
             if (bean == null)
             {
                 return;
+            }
+
+            if (bean.Profile != null)
+            {
+                if (!_profileMatcher.Matches(bean.Profile))
+                {
+                    return;
+                }
             }
 
             var returnType = method.ReturnType;
@@ -65,11 +97,7 @@ namespace Alemow.Autofac
                 throw Assertion.Fail($"{nameof(BeanAttribute)} annotated method should return non-generic type");
             }
 
-            var parameters = method.GetParameters();
-            _containerBuilder.Register(c =>
-                {
-                    return method.Invoke(instance, parameters.Select(it => ResolveParameter(c, it)).ToArray());
-                })
+            _containerBuilder.Register(c => InvokeMethod(c, instance, method))
                 .ApplyDefault()
                 .ApplyAsSelf(bean, returnType)
                 .ApplyAsImplementedInterfaces(bean, returnType)
@@ -79,55 +107,73 @@ namespace Alemow.Autofac
                 .ApplyMetadata(method.GetCustomAttributes<MetadataAttribute>());
         }
 
+        private void RegisterInitMethod(MethodInfo method, object instance)
+        {
+            var init = method.GetCustomAttribute<InitAttribute>();
+            if (init == null)
+            {
+                return;
+            }
+
+            var returnType = method.ReturnType;
+            if (returnType != typeof(void))
+            {
+                throw Assertion.Fail($"{nameof(InitAttribute)} annotated method should not return value");
+            }
+
+            _containerBuilder.RegisterBuildCallback(c =>
+            {
+                InvokeMethod(c, instance, method);
+            });
+        }
+
+        private void RegisterDestroyMethod(MethodInfo method, object instance)
+        {
+            var destroy = method.GetCustomAttribute<DestroyAttribute>();
+            if (destroy == null)
+            {
+                return;
+            }
+
+            var returnType = method.ReturnType;
+            if (returnType != typeof(void))
+            {
+                throw Assertion.Fail($"{nameof(DestroyAttribute)} annotated method should not return value");
+            }
+
+            _containerBuilder.RegisterBuildCallback(c =>
+            {
+                var parameters = ResolveParameters(c, method);
+                c.Disposer.AddInstanceForDisposal(new ActionDisposer(() =>
+                {
+                    InvokeMethod(c, instance, method, parameters);
+                }));
+            });
+        }
+
+        private object InvokeMethod(IComponentContext c, object instance, MethodInfo method)
+        {
+            return method.Invoke(instance, ResolveParameters(c, method));
+        }
+
+        private object InvokeMethod(IComponentContext c, object instance, MethodInfo method, object[] parameters)
+        {
+            return method.Invoke(instance, parameters);
+        }
+
+        private object[] ResolveParameters(IComponentContext context, MethodInfo method)
+        {
+            return method.GetParameters().Select(it => ResolveParameter(context, it)).ToArray();
+        }
+
         private object ResolveParameter(IComponentContext context, ParameterInfo parameter)
         {
-            var configValueAttr = parameter.GetCustomAttribute<ConfigValueAttribute>();
-            if (configValueAttr != null)
+            var (success, resolved) = _parameterInfoResolver.Resolve(context, new ParameterInfoResolverParam
             {
-                var valueType = parameter.ParameterType;
-                var (success, value) = _configValueResolver.Resolve(
-                    context,
-                    valueType.GetTypeInfo(),
-                    new ConfigValueResolver.ConfigValueResolverParam
-                    {
-                        Attribute = configValueAttr,
-                    });
-
-                if (success)
-                {
-                    return value;
-                }
-                
-                Assertion.IsTrue(parameter.HasDefaultValue, $"optional configValue parameter {parameter.Name} should have default value");
-                return parameter.DefaultValue;
-            }
-
-            var injectAttr = parameter.GetCustomAttribute<InjectAttribute>();
-            if (injectAttr != null)
-            {
-                var valueType = parameter.ParameterType;
-                var (success, value) = _injectResolver.Resolve(
-                    context,
-                    valueType.GetTypeInfo(),
-                    new InjectResolver.InjectResolverParam
-                    {
-                        Attribute = injectAttr,
-                    });
-                if (success)
-                {
-                    return value;
-                }
-
-                Assertion.IsTrue(parameter.HasDefaultValue, $"optional inject parameter {parameter.Name} should have default value");
-                return parameter.DefaultValue;
-            }
-
-            if (parameter.ParameterType == typeof(IComponentContext))
-            {
-                return context;
-            }
-
-            return context.Resolve(parameter.ParameterType);
+                ParameterInfo = parameter,
+            });
+            Assertion.IsTrue(success, $"failed to resolve parameter type {parameter.ParameterType}");
+            return resolved;
         }
     }
 
@@ -160,7 +206,7 @@ namespace Alemow.Autofac
         {
             if (attr.AsImplementedInterfaces)
             {
-                builder = builder.As(RegistrationBuilderExtensions.GetImplementedInterfaces(type));
+                builder = builder.As(GetImplementedInterfaces(type));
             }
 
             return builder;

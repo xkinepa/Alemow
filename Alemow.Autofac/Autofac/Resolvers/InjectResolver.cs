@@ -7,8 +7,9 @@ namespace Alemow.Autofac.Resolvers
 {
     public class InjectResolver : IResolver<InjectResolver.InjectResolverParam>
     {
-        public (bool, object) Resolve(IComponentContext context, TypeInfo type, InjectResolverParam param)
+        public (bool Successful, object Value) Resolve(IComponentContext context, InjectResolverParam param)
         {
+            var type = param.Type;
             var attr = param.Attribute;
             var key = attr.Key;
             if (key != null)
@@ -35,6 +36,7 @@ namespace Alemow.Autofac.Resolvers
 
         public class InjectResolverParam
         {
+            public TypeInfo Type { get; set; }
             public InjectAttribute Attribute { get; set; }
         }
     }

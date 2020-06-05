@@ -10,18 +10,31 @@ namespace Alemow.Autofac
 {
     public static class ContainerBuilderExtensions
     {
-        public static AutoRegisterConfigurer AutoRegister(this ContainerBuilder containerBuilder, params IAssemblySelector[] assemblySelectors)
+        public static AutoRegisterOptionsBuilder AutoRegister(this ContainerBuilder containerBuilder,
+            Action<AutoRegisterOptionsBuilder> setupAction,
+            params IAssemblySelector[] assemblySelectors)
         {
-            Assertion.IsTrue(assemblySelectors.Any(), $"{nameof(assemblySelectors)} should contain at least one value");
-            return new AutoRegisterConfigurer(containerBuilder, assemblySelectors.SelectMany(s => s.Find()));
+            var builder = new AutoRegisterOptionsBuilder();
+
+            if (!assemblySelectors.IsNullOrEmpty())
+            {
+                builder.Assemblies(assemblySelectors.SelectMany(s => s.Find()));
+            }
+
+            setupAction?.Invoke(builder);
+
+            containerBuilder.RegisterModule(new AutoRegisterModule(builder));
+
+            return builder;
         }
 
-        public static AutoRegisterConfigurer AutoRegisterAssembly(this ContainerBuilder containerBuilder, Assembly assembly)
-        {
-            return AutoRegister(containerBuilder, new SimpleAssemblySelector(assembly));
-        }
+        public static AutoRegisterOptionsBuilder AutoRegister(this ContainerBuilder containerBuilder, params IAssemblySelector[] assemblySelectors)
+            => AutoRegister(containerBuilder, _ => { }, assemblySelectors);
 
-        public static AutoRegisterConfigurer AutoRegisterBaseDirectory(this ContainerBuilder containerBuilder, Func<string, Assembly> assemblyLoader,
+        public static AutoRegisterOptionsBuilder AutoRegister(this ContainerBuilder containerBuilder)
+            => AutoRegister(containerBuilder, new SimpleAssemblySelector());
+
+        public static AutoRegisterOptionsBuilder AutoRegisterBaseDirectory(this ContainerBuilder containerBuilder, Func<string, Assembly> assemblyLoader,
             IList<string> includes = null,
             IList<string> excludes = null
         )

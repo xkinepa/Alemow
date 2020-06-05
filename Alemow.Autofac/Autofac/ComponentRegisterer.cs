@@ -12,12 +12,15 @@ namespace Alemow.Autofac
     internal class ComponentRegisterer : IRegisterer
     {
         private readonly ContainerBuilder _containerBuilder;
-        private readonly IList<IAutoRegisterFeature> _features;
+        private readonly IEnumerable<IAutoRegisterFeature> _features;
 
-        public ComponentRegisterer(ContainerBuilder containerBuilder, IList<IAutoRegisterFeature> features)
+        private readonly IProfileMatcher _profileMatcher;
+
+        public ComponentRegisterer(ContainerBuilder containerBuilder, AutoRegisterOptions options)
         {
             _containerBuilder = containerBuilder;
-            _features = features;
+            _features = options.Features;
+            _profileMatcher = new ProfileMatcher(options.Profiles);
         }
 
         public void Register(Type type)
@@ -26,6 +29,14 @@ namespace Alemow.Autofac
             if (com == null)
             {
                 return;
+            }
+
+            if (com.Profile != null)
+            {
+                if (!_profileMatcher.Matches(com.Profile))
+                {
+                    return;
+                }
             }
 
             var isGeneric = type.IsGenericType;
@@ -69,8 +80,9 @@ namespace Alemow.Autofac
 
         internal static IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle>
             ApplyFeatures<TLimit, TActivatorData, TRegistrationStyle>(
-                this IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> builder, Type type, IList<IAutoRegisterFeature> features
+                this IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> builder, Type type, IEnumerable<IAutoRegisterFeature> features
             )
+            where TActivatorData : ReflectionActivatorData
         {
             foreach (var feature in features)
             {

@@ -1,31 +1,38 @@
 ﻿using System.Reflection;
 using Alemow.Attributes;
+using Alemow.Config;
 using Alemow.Miscs;
 using Autofac;
-using Microsoft.Extensions.Configuration;
 
 namespace Alemow.Autofac.Resolvers
 {
     public class ConfigValueResolver : IResolver<ConfigValueResolver.ConfigValueResolverParam>
     {
-        public (bool, object) Resolve(IComponentContext context, TypeInfo type, ConfigValueResolverParam param)
+        private readonly IConfigResolver _configResolver;
+
+        public ConfigValueResolver(IConfigResolver configResolver)
         {
+            _configResolver = configResolver;
+        }
+
+        public (bool Successful, object Value) Resolve(IComponentContext context, ConfigValueResolverParam param)
+        {
+            var type = param.Type;
             var attr = param.Attribute;
-            var valuePath = attr.Path;
-            var config = context.Resolve<IConfiguration>();
-            var configSection = config.GetSection(valuePath);
-            if (!configSection.Exists())
+            var path = attr.Path;
+            var exists = _configResolver.TryGet(path, type, out var val);
+            if (!exists)
             {
-                Assertion.IsTrue(!attr.Required, $"required config path {valuePath} not resolved.");
+                Assertion.IsTrue(!attr.Required, $"required config path {path} not resolved.");
                 return (false, null);
             }
 
-            var value = configSection.Get(type);
-            return (true, value);
+            return (true, val);
         }
 
         public class ConfigValueResolverParam
         {
+            public TypeInfo Type { get; set; }
             public ConfigValueAttribute Attribute { get; set; }
         }
     }
