@@ -7,15 +7,19 @@ namespace Alemow.Attributes
     {
         public ComponentAttribute(
             bool asSelf = true,
-            bool asImplementedInterfaces = true
+            bool asImplementedInterfaces = true,
+            string profile = null
         )
         {
             AsSelf = asSelf;
             AsImplementedInterfaces = asImplementedInterfaces;
+            Profile = profile;
         }
 
         public bool AsSelf { get; }
 
         public bool AsImplementedInterfaces { get; }
+
+        public string Profile { get; }
     }
 }
