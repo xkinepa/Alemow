@@ -71,7 +71,7 @@ namespace Alemow.Autofac
         }
     }
 
-    public static class AutoRegisterConfigurerExtensions
+    public static class AutoRegisterOptionsBuilderExtensions
     {
         public static AutoRegisterOptionsBuilder AssemblySelector(this AutoRegisterOptionsBuilder optionsBuilder, IAssemblySelector assemblySelector)
         {
@@ -127,6 +127,9 @@ namespace Alemow.Autofac
 
         public IEnumerable<IAutoRegisterFeature> Features =>
             FeatureDefinitions.Select(it => it.Instance).OfType<IAutoRegisterFeature>();
+
+        public IEnumerable<IContainerBuilderFeature> ContainerBuilderFeatures =>
+            FeatureDefinitions.Select(it => it.Instance).OfType<IContainerBuilderFeature>();
 
         public IEnumerable<IComponentRegistrationFeature> ComponentRegistrationFeatures =>
             FeatureDefinitions.Select(it => it.Instance).OfType<IComponentRegistrationFeature>();

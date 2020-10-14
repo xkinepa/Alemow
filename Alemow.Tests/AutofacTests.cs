@@ -10,7 +10,7 @@ namespace Alemow
         public AutofacTests() : base(b =>
         {
             b.RegisterInstance(new ConfigurationBuilder().Build()).As<IConfiguration>();
-            b.AutoRegisterAssembly(typeof(AutofacTests).Assembly);
+            b.AutoRegister(opts => opts.Assembly(typeof(AutofacTests).Assembly));
         })
         {
         }

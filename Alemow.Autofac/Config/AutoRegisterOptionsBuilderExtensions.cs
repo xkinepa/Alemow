@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Alemow.Config
 {
-    public static class AutoRegisterConfigurerExtensions
+    public static class AutoRegisterOptionsBuilderExtensions
     {
         public static AutoRegisterOptionsBuilder Configuration(this AutoRegisterOptionsBuilder optionsBuilder, IConfiguration configuration)
         {

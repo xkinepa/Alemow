@@ -28,13 +28,15 @@ namespace Alemow.Autofac
             return builder;
         }
 
-        public static AutoRegisterOptionsBuilder AutoRegister(this ContainerBuilder containerBuilder, params IAssemblySelector[] assemblySelectors)
+        public static AutoRegisterOptionsBuilder AutoRegister(this ContainerBuilder containerBuilder,
+            params IAssemblySelector[] assemblySelectors)
             => AutoRegister(containerBuilder, _ => { }, assemblySelectors);
 
         public static AutoRegisterOptionsBuilder AutoRegister(this ContainerBuilder containerBuilder)
             => AutoRegister(containerBuilder, new SimpleAssemblySelector());
 
-        public static AutoRegisterOptionsBuilder AutoRegisterBaseDirectory(this ContainerBuilder containerBuilder, Func<string, Assembly> assemblyLoader,
+        public static AutoRegisterOptionsBuilder AutoRegisterBaseDirectory(this ContainerBuilder containerBuilder,
+            Func<string, Assembly> assemblyLoader,
             IList<string> includes = null,
             IList<string> excludes = null
         )

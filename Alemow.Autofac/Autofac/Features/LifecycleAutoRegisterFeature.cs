@@ -10,11 +10,11 @@ using Autofac.Builder;
 
 namespace Alemow.Autofac.Features
 {
-    internal class LifecyleAutoRegisterFeature : IAutoRegisterFeature
+    internal class LifecycleAutoRegisterFeature : IAutoRegisterFeature
     {
         private readonly ParameterInfoResolver _parameterInfoResolver;
 
-        public LifecyleAutoRegisterFeature(IConfigResolver configResolver)
+        public LifecycleAutoRegisterFeature(IConfigResolver configResolver)
         {
             _parameterInfoResolver = new ParameterInfoResolver(new ConfigValueResolver(configResolver), new InjectResolver());
         }

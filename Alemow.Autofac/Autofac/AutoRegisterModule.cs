@@ -22,11 +22,13 @@ namespace Alemow.Autofac
             _optionsBuilder.Feature<ConfigValueFeature>();
             _optionsBuilder.Feature<InjectionFeature>();
 
+            _optionsBuilder.Feature<LifecycleFeature>();
+
             //_optionsBuilder.Feature<ConfigValueFieldAutoRegisterFeature>();
             //_optionsBuilder.Feature<InjectionFieldAutoRegisterFeature>();
             //_optionsBuilder.Feature<ConfigValueCtorParamAutoRegisterFeature>();
             //_optionsBuilder.Feature<InjectionCtorParamAutoRegisterFeature>();
-            _optionsBuilder.Feature<LifecyleAutoRegisterFeature>();
+            //_optionsBuilder.Feature<LifecycleAutoRegisterFeature>();
             _optionsBuilder.Feature<AttachLifetimeScopeAutoRegisterFeature>();
         }
 
@@ -42,6 +44,11 @@ namespace Alemow.Autofac
             builder.RegisterInstance(_options.ConfigResolver).As<IConfigResolver>().ExternallyOwned();
 
             builder.RegisterSource(new SingleResolverRegistrationSource());
+
+            foreach (var feature in _options.ContainerBuilderFeatures)
+            {
+                feature.Configure(builder);
+            }
         }
 
         protected override void AttachToComponentRegistration(IComponentRegistry componentRegistry, IComponentRegistration registration)

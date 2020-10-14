@@ -1,4 +1,5 @@
 ﻿using System;
+using Autofac;
 using Autofac.Builder;
 using Autofac.Core;
 
@@ -13,6 +14,11 @@ namespace Alemow.Autofac
         IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle>
             Apply<TLimit, TActivatorData, TRegistrationStyle>(IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> builder, Type type)
             where TActivatorData : ReflectionActivatorData;
+    }
+
+    public interface IContainerBuilderFeature : IFeature
+    {
+        void Configure(ContainerBuilder containerBuilder);
     }
 
     public interface IComponentRegistrationFeature : IFeature
